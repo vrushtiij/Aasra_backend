@@ -3,7 +3,6 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.firebase import init_firebase
 from app.routers import (
     auth, patients, medications, reminders, games, mood, movement,
     memory_lane, emergency, sync, dashboard, home,
@@ -14,11 +13,6 @@ app = FastAPI(
     description="Backend API for Aasra — a daily-assistance app for elderly dementia patients and their caregivers.",
     version="1.0.0",
 )
-
-
-@app.on_event("startup")
-def startup():
-    init_firebase()
 
 
 @app.get("/")
