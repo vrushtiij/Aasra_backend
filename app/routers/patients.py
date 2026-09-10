@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -26,6 +26,7 @@ def create_patient(
         email=body.email,
         role="patient",
         language=body.language or "English",
+        created_at=datetime.now(timezone.utc),
     )
     db.add(user)
     db.flush()
@@ -36,14 +37,18 @@ def create_patient(
         gender=body.gender,
         address=body.address,
         emergency_contact=body.emergency_contact,
-        dementia_stage=body.dementia_stage,
+        dementia_stage=(
+    "mild"
+    if body.dementia_stage == "Mild Cognitive Impairment"
+    else body.dementia_stage.lower() if body.dementia_stage else None
+),
         diagnosis_date=body.diagnosis_date,
         preferred_language=body.preferred_language or body.language,
         daily_routine=body.daily_routine,
         notes=body.notes,
     )
     db.add(profile)
-
+    db.flush()
     link = models.CaretakerPatient(
         patient_id=user.user_id,
         caretaker_id=caretaker.user_id,
